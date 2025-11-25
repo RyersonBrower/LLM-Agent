@@ -1,0 +1,5 @@
+{
+  "project": "This is an LLM-powered question answering agent that runs in Docker.",
+  "language": "Python is the main language used for backend services.",
+  "docker": "Docker is used to containerize the agent and its dependencies."
+}

@@ -2,12 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Agent</title>
-
-    <p>LLM Agent Day 1 Test</p>
+    <title>LLM Agent - Day 3 Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        input, button { padding: 0.5rem; margin: 0.5rem 0; width: 100%; }
+        #answer { margin-top: 1rem; padding: 1rem; background: #f0f0f0; border-radius: 5px; }
+    </style>
 </head>
 <body>
-    
+    <h1>LLM Agent Test (Day 3)</h1>
+    <form id="question-form">
+        <input type="text" id="question" placeholder="Ask your question..." required />
+        <button type="submit">Ask</button>
+    </form>
+    <div id="answer"></div>
+
+    <script>
+        const form = document.getElementById("question-form");
+        const answerDiv = document.getElementById("answer");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const question = document.getElementById("question").value;
+
+            answerDiv.textContent = "Thinking...";
+
+            try {
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({ question })
+                });
+                const data = await response.json();
+                answerDiv.textContent = data.answer;
+            } catch (err) {
+                answerDiv.textContent = "Error: " + err;
+            }
+        });
+    </script>
 </body>
 </html>
