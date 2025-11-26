@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
+CORS(app)
 
 AGENT_URL = "http://agent:5001/query"  # points to agent container in Docker network
 
