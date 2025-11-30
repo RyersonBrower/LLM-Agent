@@ -5,7 +5,9 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
-AGENT_URL = "http://agent:5001/query"  # points to agent container in Docker network
+AGENT_URL = "http://agent:5001/query"
+
+conversation_history = []  # stored locally for displaying on page
 
 @app.route("/")
 def index():
@@ -14,15 +16,32 @@ def index():
 @app.route("/ask", methods=["POST"])
 def ask():
     question = request.form.get("question")
+    urls = request.form.get("urls", "")
+    files = request.files.getlist("files")
+
     if not question:
-        return jsonify({"answer": "No question provided."})
+        return jsonify({"history": conversation_history})
+
+    # Build request to agent
+    data = {"question": question, "urls": urls}
+
+    files_payload = [
+        ("files", (f.filename, f.stream, f.mimetype))
+        for f in files
+    ]
 
     try:
-        # Send question to agent service
-        response = requests.post(AGENT_URL, json={"question": question})
-        return jsonify(response.json())
-    except requests.exceptions.RequestException as e:
-        return jsonify({"answer": f"Error contacting agent: {e}"})
+        resp = requests.post(AGENT_URL, data=data, files=files_payload)
+        response_json = resp.json()
+        answer = response_json.get("answer", "(no answer)")
+    except Exception as e:
+        answer = f"Error contacting agent: {e}"
+
+    # Save to local history
+    conversation_history.append({"question": question, "answer": answer})
+
+    return jsonify({"history": conversation_history})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
