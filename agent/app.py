@@ -81,7 +81,6 @@ def query():
             used_sources.append({"type": "file", "name": f.filename})
 
     # ------------------- Extract text from URLs --------------------
-    # ------------------- Extract text from URLs --------------------
     if urls:
         for url in urls.split(","):
             url = url.strip()
