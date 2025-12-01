@@ -10,20 +10,6 @@ An intelligent agent system built with Python, Flask, and Docker. The project pr
 - Environment-variable configuration  
 - Easy to extend with tools, memory, or additional agents  
 
-## 📂 Project Structure
-LLM-Agent/
-├── docker-compose.yml
-├── .env
-├── web/
-│   ├── Dockerfile
-│   ├── app.py
-│   ├── templates/
-│   │   └── index.html
-│   └── static/
-│       └── script.js
-└── agent/
-    ├── Dockerfile
-    └── app.py
 
 ## ⚙️ How It Works
 
@@ -39,7 +25,7 @@ LLM-Agent/
 
 ## 🐳 Running the Project
 
-### 1. Add a `.env` file:
+### 1. Add a `.env` file in the project root:
 OPENAI_API_KEY=your_api_key_here
 
 ### 2. Build and start:
