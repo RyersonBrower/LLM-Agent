@@ -57,6 +57,12 @@ form.onsubmit = async (e) => {
         <div class="entry">
             <div class="you">You: ${entry.question}</div>
             <div class="agent">Agent: ${entry.answer}</div>
+            ${entry.sources && entry.sources.length ? `
+                <div class="sources">
+                    <strong>Sources:</strong> 
+                    ${entry.sources.map(s => s.name).join(", ")}
+                </div>
+` : ""}
         </div>
         `;
     });

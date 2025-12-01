@@ -13,7 +13,9 @@ app = Flask(__name__)
 
 # ------------------- Short-term memory --------------------
 chat_history = []
+used_sources = []
 MAX_HISTORY = 6
+
 
 def append_to_history(role, text):
     chat_history.append({"role": role, "content": text})
@@ -49,6 +51,8 @@ def simple_retrieval(text, question):
 # ------------------- /query route --------------------
 @app.route("/query", methods=["POST"])
 def query():
+    used_sources.clear()
+
     # Accept FormData or JSON
     if request.is_json:
         data = request.json
@@ -68,17 +72,23 @@ def query():
     for f in files:
         if f.filename.endswith(".pdf"):
             full_text += extract_pdf(f) + "\n"
+            used_sources.append({"type": "file", "name": f.filename})
         elif f.filename.endswith(".txt"):
             full_text += extract_txt(f) + "\n"
+            used_sources.append({"type": "file", "name": f.filename})
         elif f.filename.endswith(".docx") or f.filename.endswith(".doc"):
             full_text += extract_docx(f) + "\n"
+            used_sources.append({"type": "file", "name": f.filename})
 
+    # ------------------- Extract text from URLs --------------------
     # ------------------- Extract text from URLs --------------------
     if urls:
         for url in urls.split(","):
             url = url.strip()
             if url:
                 full_text += extract_url(url) + "\n"
+                used_sources.append({"type": "url", "name": url})
+
 
     # ------------------- Add JSON knowledge --------------------
     json_knowledge = get_relevant_info(question)
@@ -111,7 +121,10 @@ def query():
 
     append_to_history("assistant", answer)
 
-    return jsonify({"answer": answer})
+    return jsonify({
+        "answer": answer,
+        "sources": used_sources
+})
 
 # ------------------- Reset memory --------------------
 @app.route("/reset", methods=["POST"])

@@ -7,7 +7,12 @@ CORS(app)
 
 AGENT_URL = "http://agent:5001/query"
 
-conversation_history = []  # stored locally for displaying on page
+sources = response_json.get("sources", []) # stored locally for displaying on page
+conversation_history.append({
+    "question": question,
+    "answer": answer,
+    "sources": sources
+})
 
 @app.route("/")
 def index():
