@@ -8,52 +8,52 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: #f5f6fa;
+            background: #eef2f5;
             color: #333;
         }
 
         .container {
             max-width: 800px;
             margin: 2rem auto;
-            background: white;
+            background: #fff;
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         h1 {
-            margin-top: 0;
             text-align: center;
+            margin-top: 0;
             font-size: 2rem;
             color: #2c3e50;
         }
 
         label {
             font-weight: bold;
+            margin-top: 1.2rem;
             display: block;
-            margin-top: 1rem;
         }
 
-        input[type="text"],
-        input[type="file"],
-        textarea,
+        .input-box {
+            margin-top: 0.5rem;
+            background: #f7f9fc;
+            border: 1px solid #d1d9e6;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
         button {
             width: 100%;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-        }
-
-        button {
+            margin-top: 1.5rem;
+            padding: 0.8rem;
             background: #3498db;
             color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 1.5rem;
             font-size: 1.1rem;
-            transition: background 0.2s ease;
         }
 
         button:hover {
@@ -65,34 +65,35 @@
         }
 
         .entry {
-            background: #ecf0f1;
-            border-left: 5px solid #3498db;
+            background: #f1f4f8;
             padding: 1rem;
-            border-radius: 5px;
+            border-radius: 10px;
             margin-bottom: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .you {
             font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
+            padding-bottom: 0.4rem;
+            color: #34495e;
         }
 
         .agent {
-            margin-top: 0.3rem;
-            line-height: 1.4;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            background: #ffffff;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
         }
 
         .sources {
-            margin-top: 0.5rem;
-            background: #dfe6e9;
-            padding: 0.5rem;
-            border-radius: 5px;
+            margin-top: 0.6rem;
             font-size: 0.9rem;
-        }
-
-        .sources strong {
-            color: #2d3436;
+            background: #e9eef5;
+            padding: 0.6rem;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -103,15 +104,14 @@
     <h1>LLM Agent</h1>
 
     <form id="askForm" enctype="multipart/form-data">
-
         <label>Your Question</label>
-        <input type="text" id="question" name="question" placeholder="Ask something..." required />
+        <input class="input-box" type="text" id="question" name="question" placeholder="Ask something..." required>
 
         <label>Upload Files</label>
-        <input type="file" id="files" name="files" multiple />
+        <input class="input-box" type="file" id="files" name="files" multiple>
 
         <label>Website URLs (comma-separated)</label>
-        <input type="text" id="urls" name="urls" placeholder="https://example.com, ..." />
+        <input class="input-box" type="text" id="urls" name="urls" placeholder="https://example.com, ...">
 
         <button type="submit">Ask Agent</button>
     </form>
@@ -137,18 +137,20 @@
         const res = await fetch("/ask", { method: "POST", body: formData });
         const data = await res.json();
 
+        // Clear old history
         historyDiv.innerHTML = "";
+
+        // Render updated history
         data.history.forEach(entry => {
+            const sourcesList = entry.sources && entry.sources.length
+                ? `<div class="sources"><strong>Sources:</strong> ${entry.sources.map(s => s.name).join(", ")}</div>`
+                : "";
+
             historyDiv.innerHTML += `
                 <div class="entry">
                     <div class="you">You: ${entry.question}</div>
-                    <div class="agent">Agent: ${entry.answer}</div>
-
-                    ${entry.sources && entry.sources.length ? `
-                        <div class="sources">
-                            <strong>Sources:</strong> ${entry.sources.map(s => s.name).join(", ")}
-                        </div>
-                    ` : ""}
+                    <div class="agent">${entry.answer}</div>
+                    ${sourcesList}
                 </div>
             `;
         });
@@ -157,4 +159,5 @@
 
 </body>
 </html>
+
 
